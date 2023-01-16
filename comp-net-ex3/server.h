@@ -24,6 +24,7 @@ private:
 	void createListenSocket();
 	void bindListenSocket(int i_Port);
 	void startListening(int i_Backlog);
+	void handleDeadSockets();
 	void acceptConnection(Socket* socket);
 	void receiveMessage(Socket* socket);
 	void handleSocketsAwaitingReceive(int& nfd);

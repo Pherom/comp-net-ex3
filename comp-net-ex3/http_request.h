@@ -45,4 +45,5 @@ public:
 	string getQueryParameterValue(const string& i_QueryParameterName);
 	bool queryParameterExists(const string& i_QueryParameterName);
 	bool queryParameterExistsWithValue(const string& i_QueryParameterName, const string& i_QueryParameterValue);
+	string toString() const;
 };

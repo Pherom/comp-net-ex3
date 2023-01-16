@@ -1,5 +1,7 @@
 #include "socket_manager.h"
 
+const std::chrono::seconds SocketManager::k_SocketTimeout(120);
+
 SocketManager::SocketManager(int i_MaxSockets) {
 	m_MaxSockets = i_MaxSockets;
 	m_Sockets = new Socket*[m_MaxSockets]();
@@ -63,7 +65,10 @@ int SocketManager::performSelection() {
 			FD_SET(m_Sockets[i]->getID(), &m_AwaitingSend);
 	}
 
-	nfd = select(0, &m_AwaitingReceive, &m_AwaitingSend, NULL, NULL);
+	struct timeval timeout;
+	timeout.tv_sec = 120;
+	timeout.tv_usec = 0;
+	nfd = select(0, &m_AwaitingReceive, &m_AwaitingSend, NULL, &timeout);
 
 	return nfd;
 }
@@ -90,4 +95,19 @@ vector<Socket*> SocketManager::getAwaitingSend() {
 	}
 
 	return socketsAwaitingSend;
+}
+
+void SocketManager::cleanUpDeadSockets() {
+	for (int i = 0; i < m_MaxSockets; i++) {
+		if (m_Sockets[i] != nullptr && m_Sockets[i]->getState() == Socket::State::RECEIVE && !FD_ISSET(m_Sockets[i]->getID(), &m_AwaitingReceive)) {
+			auto elapsedTime = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now() - m_Sockets[i]->getLastReceivedTime());
+			if (elapsedTime >= k_SocketTimeout) {
+				closesocket(m_Sockets[i]->getID());
+				delete m_Sockets[i];
+				m_Sockets[i] = nullptr;
+				m_SocketCount--;
+			}
+		}
+	}
+
 }

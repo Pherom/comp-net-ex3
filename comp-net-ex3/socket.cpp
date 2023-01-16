@@ -22,6 +22,7 @@ string Socket::getIncomingMessage() const {
 }
 
 void Socket::appendToIncomingMessage(char* i_AdditionStr) {
+	m_LastReceivedTime = std::chrono::system_clock::now();
 	m_IncomingMessage.append(i_AdditionStr);
 }
 
@@ -39,4 +40,8 @@ void Socket::setOutgoingMessage(const string& i_NewMessage) {
 
 void Socket::appendToOutgoingMessage(const string& i_AdditionStr) {
 	m_OutgoingMessage.append(i_AdditionStr);
+}
+
+std::chrono::time_point<std::chrono::system_clock> Socket::getLastReceivedTime() {
+	return m_LastReceivedTime;
 }

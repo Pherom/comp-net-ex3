@@ -5,6 +5,9 @@
 
 class SocketManager {
 
+public:
+	static const std::chrono::seconds k_SocketTimeout;
+
 private:
 	int m_MaxSockets;
 	int m_SocketCount = 0;
@@ -20,5 +23,6 @@ public:
 	int performSelection();
 	vector<Socket*> getAwaitingReceive();
 	vector<Socket*> getAwaitingSend();
+	void cleanUpDeadSockets();
 
 };

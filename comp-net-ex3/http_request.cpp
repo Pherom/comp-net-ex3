@@ -43,7 +43,7 @@ string HttpRequest::getMessageBody() const {
 void HttpRequest::setMessageBody(const string& i_MessageBody) {
 	stringstream newContentLengthStrStream;
 	newContentLengthStrStream << i_MessageBody.length();
-	setHeader("Content-Length", newContentLengthStrStream.str());
+	setHeader("content-length", newContentLengthStrStream.str());
 	m_MessageBody = i_MessageBody;
 }
 
@@ -108,4 +108,17 @@ bool HttpRequest::queryParameterExists(const string& i_QueryParameterName) {
 bool HttpRequest::queryParameterExistsWithValue(const string& i_QueryParameterName, const string& i_QueryParameterValue) {
 	unordered_map<string, string> queryParameters = getQueryParameters();
 	return queryParameters.count(i_QueryParameterName) > 0 && queryParameters.at(i_QueryParameterName) == i_QueryParameterValue;
+}
+
+string HttpRequest::toString() const {
+	stringstream requestStr;
+
+	requestStr << k_MethodToMethodName.at(m_Method) << " " << m_RequestURI << " " << m_ProtocolVersion << "\r\n";
+	for (auto header : m_Headers) {
+		requestStr << header.first << ": " << header.second << "\r\n";
+	}
+
+	requestStr << m_MessageBody << "\r\n";
+
+	return requestStr.str();
 }

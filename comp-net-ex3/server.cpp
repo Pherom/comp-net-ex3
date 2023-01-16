@@ -93,7 +93,7 @@ void Server::receiveMessage(Socket* socket) {
 	{
 		buffer[bytesRecv] = '\0';
 		socket->appendToIncomingMessage(buffer);
-		cout << "Server: Recieved: " << bytesRecv << " bytes of \n\"" << buffer << "\"\nmessage.\n";
+		cout << "Server: Recieved message containing: " << bytesRecv << " bytes" << endl;
 		delete[] buffer;
 
 		int headerEndIndex = socket->getIncomingMessage().find("\r\n\r\n");
@@ -156,7 +156,7 @@ void Server::sendMessage(Socket* socket) {
 		return;
 	}
 
-	cout << "Server: Sent: " << bytesSent << "\\" << outgoingMessage.size() << " bytes of \n\"" << outgoingMessage << "\"\nmessage.\n";
+	cout << "Server: Sent message containing: " << bytesSent << "\\" << outgoingMessage.size() << " bytes" << endl;
 
 	if (socket->getState() == Socket::State::SEND) {
 		socket->setOutgoingMessage(string());
@@ -179,6 +179,7 @@ void Server::acceptAndHandleConnections() {
 	while (true)
 	{
 		int nfd = m_SocketManager.performSelection();
+		m_SocketManager.cleanUpDeadSockets();
 
 		if (nfd == SOCKET_ERROR)
 		{
@@ -206,8 +207,11 @@ Server::~Server() {
 }
 
 void Server::start(int i_Port, int i_Backlog) {
+	cout << "Server starting..." << endl;
 	bindListenSocket(i_Port);
+	cout << "Socket binded!" << endl;
 	startListening(i_Backlog);
+	cout << "Now accepting and handling connections..." << endl;
 	acceptAndHandleConnections();
 }
 

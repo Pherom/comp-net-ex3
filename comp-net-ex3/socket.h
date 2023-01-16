@@ -2,6 +2,7 @@
 
 #include <WinSock2.h>
 #include <string>
+#include <chrono>
 
 using namespace std;
 
@@ -17,6 +18,7 @@ private:
 	State m_State;
 	string m_IncomingMessage;
 	string m_OutgoingMessage;
+	std::chrono::time_point<std::chrono::system_clock> m_LastReceivedTime;
 
 public:
 	Socket(SOCKET i_ID, State i_InitialState);
@@ -29,5 +31,6 @@ public:
 	string getOutgoingMessage() const;
 	void setOutgoingMessage(const string& i_NewMessage);
 	void appendToOutgoingMessage(const string& i_AdditionStr);
+	std::chrono::time_point<std::chrono::system_clock> getLastReceivedTime();
 
 };
